@@ -168,15 +168,18 @@ sync_fork git github beets sampsyo
 sync_fork git github bgpanel warhawk3407
 sync_fork git github blackfriday russross
 sync_fork git github bone squiidz
+sync_fork git github btree google
 sync_fork git github cache2go rif
 sync_fork git github calamari ceph
 sync_fork git github cdnstats antage
 sync_fork git github ceph ceph
 sync_fork git github chub vchimishuk
+sync_fork git github codeworld google
 sync_fork git github consul hashicorp
 sync_fork git github consul-alerts AcalephStorage
 sync_fork git github CoverflowAltTab dmo60
 sync_fork git github cpu jpoirier
+sync_fork git github deepboost google
 sync_fork git github dl nf
 sync_fork git github donut dforsyth
 sync_fork git github eiskaltdcpp eiskaltdcpp
@@ -199,10 +202,13 @@ sync_fork git github gnome-shell-headphone-indicator mengzhuo
 sync_fork git github gnome-shell-remove-dropdown-arrows mpdeimos
 sync_fork git github go.tftp brooksbp
 sync_fork git github go-fuse hanwen
+sync_fork git github go-github google
 sync_fork git github go-libpq jgallagher
 sync_fork git github go-pgsql lxn
 sync_fork git github go-systemd ehmry
 sync_fork git github go-taglib wtolson
+sync_fork git github go-tpm google
+sync_fork git github go-webdav
 sync_fork git github go-xmpp mattn
 sync_fork git github gocurse jabb
 sync_fork git github gocurses tncardoso
@@ -219,10 +225,12 @@ sync_fork git github GoVisa rainliu
 sync_fork git github gowiki jmoiron
 sync_fork git github gowiki-mux adred
 sync_fork git github grong bortzmeyer
+sync_fork git github hesokuri google
 sync_fork git github htop hishamhm
 sync_fork git github httprouter julienschmidt
 sync_fork git github hugo spf13
 sync_fork git github hydra NixOS
+sync_fork git github identity-toolkit-go-client
 sync_fork git github influxdb influxdb
 sync_fork git github iothrottler
 sync_fork git github LaTeXTools SublimeText
@@ -252,8 +260,11 @@ sync_fork git github nixos-artwork NixOS
 sync_fork git github nixpkgs NixOS
 sync_fork git github NodeBB NodeBB
 sync_fork git github oggflacblock imalone
+sync_fork git github open-location-code google
 sync_fork git github opencompute facebookarchive
 sync_fork git github os measure
+sync_fork git github osquery facebook
+sync_fork git github paramgmt google
 sync_fork git github perl-audio-flac-header
 sync_fork git github pgsql.go jbarham
 sync_fork git github pgsql-utils snaga
@@ -265,6 +276,7 @@ sync_fork git github pickup werkshy
 sync_fork git github PostgresApp PostgresApp
 sync_fork git github PowerShell SublimeText
 sync_fork git github pq lib
+sync_fork git github pull-request-mailer google
 sync_fork git github pulsego moriyoshi
 sync_fork git github pure yahoo
 sync_fork git github reddit reddit
@@ -275,8 +287,11 @@ sync_fork git github riako jkassemi
 sync_fork git github rsync julian-gutierrez-o
 sync_fork git github rutorrent-auto-installer-centos etiennerached
 sync_fork git github salt saltstack
+sync_fork git github Semantic-UI Semantic-Org
 sync_fork git github slap slap-editor
+sync_fork git github snappy google
 sync_fork git github split2flac ftrvxmtrx
+sync_fork git github supler softwaremill
 sync_fork git github syncthing syncthing
 sync_fork git github theory ralfonso
 sync_fork git github tigertree udoprog
@@ -287,6 +302,7 @@ sync_fork git github wav nf
 sync_fork git github wcld ryandotsmith
 sync_fork git github wgo royger
 sync_fork git github what-cd-scripts gmcabrita
+sync_fork git github xsecurelock google
 sync_fork git github ympd notandy
 sync_fork git github yoink phracker
 
