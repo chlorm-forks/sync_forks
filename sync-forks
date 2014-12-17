@@ -146,7 +146,7 @@ sync_fork () {
 
 	cd $workDir
 
-	if [ -d "$2" ]l then
+	if [ -d "$2" ]; then
 		rm -rf ${2}/
 	fi
 
