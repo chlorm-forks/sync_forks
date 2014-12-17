@@ -293,6 +293,7 @@ sync_fork git github snappy google
 sync_fork git github split2flac ftrvxmtrx
 sync_fork git github supler softwaremill
 sync_fork git github syncthing syncthing
+sync_fork git github taglib taglib
 sync_fork git github theory ralfonso
 sync_fork git github tigertree udoprog
 sync_fork git github U-232-V3 Bigjoos
