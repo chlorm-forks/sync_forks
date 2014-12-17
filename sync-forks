@@ -110,7 +110,7 @@ sync_fork () {
 	# If not, add upstream remote
 	if [ -z "$checkForUpstreamRemote" ]; then
 		git remote add upstream "$(upstream_url)"/"${repoName}".git || \
-		{ echo "$(date '+%F %R') ERROR: failed to add upstream remote to $repoName.git" >> sync_fork.errors }
+		{ echo "$(date '+%F %R') ERROR: failed to add upstream remote to $repoName.git" >> sync_fork.errors ; }
 	fi
 
 	# Check to see if the upstream repo still exists
