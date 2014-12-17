@@ -101,7 +101,7 @@ sync_fork () {
 
 	cd "$workDir"
 
-	git clone git://github.com/chlorm-forks/${repoName}.git
+	git clone git@github.com:chlorm-forks/"${repoName}".git
 	cd ${repoName}
 
 
