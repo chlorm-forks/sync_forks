@@ -106,11 +106,11 @@ sync_fork () {
 
 
 	# Check to see if repo has a remote upstream set
-	checkForUpstreamRemote=$(git remote | grep 'upstream' >> /dev/null)
+	checkForUpstreamRemote=$(git remote | grep 'upstream' > /dev/null)
 	# If not, add upstream remote
 	if [ -z "$checkForUpstreamRemote" ]; then
-		git remote add upstream $(upstream_url)/${repoName}.git || \
-		{ echo "$(date '+%F %R') ERROR: failed to add upstream remote to $repoName.git" >> sync_fork.errors ; return 1 ; }
+		git remote add upstream "$(upstream_url)"/"${repoName}".git || \
+		{ echo "$(date '+%F %R') ERROR: failed to add upstream remote to $repoName.git" >> sync_fork.errors }
 	fi
 
 	# Check to see if the upstream repo still exists
@@ -129,7 +129,6 @@ sync_fork () {
 			# If not, nothing to do
 			if test $? = 2; then
 				echo "ERROR: $repoName upstream unreachable" >> sync_fork.errors
-				return 1
 			fi
 			;;
 		'hg')
@@ -146,8 +145,8 @@ sync_fork () {
 
 	cd $workDir
 
-	if [ -d "$2" ]; then
-		rm -rf ${2}/
+	if [ -d "$repoName" ]; then
+		rm -rf ${repoName}/
 	fi
 
 }
