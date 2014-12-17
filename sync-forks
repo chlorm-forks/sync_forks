@@ -143,6 +143,8 @@ sync_fork () {
 
 	git pull upstream master
 
+	git push origin master
+
 	cd $workDir
 
 	if [ -d "$repoName" ]; then
