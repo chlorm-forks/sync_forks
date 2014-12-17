@@ -45,7 +45,7 @@ upstream_url () {
 					echo "git://g.blicky.net"
 					;;
 				'github')
-					echo "git://github.com/$accountName"
+					echo "git@github.com:$accountName"
 					;;
 				'googlecode')
 					echo "git://code.google.com"
