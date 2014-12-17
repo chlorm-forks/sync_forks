@@ -1,0 +1,183 @@
+#!/usr/bin/env sh
+
+# Current directory is used as the working directory
+workDir=$(pwd)
+
+upstream_url () {
+
+	case $upstreamRepoVcs in
+		'bazaar')
+			case $remoteRepoLocation in
+				'')
+					echo ""
+					;;
+				*)
+					echo "ERROR: invalid remote repo location: $remoteRepoLocation" >> sync_fork.errors
+					return 1
+					;;
+			esac
+			;;
+		'cvs')
+			case $remoteRepoLocation in
+				'')
+					echo ""
+					;;
+				*)
+					echo "ERROR: invalid remote repo location: $remoteRepoLocation" >> sync_fork.errors
+					return 1
+					;;
+			esac
+			;;
+		'darcs')
+			case $remoteRepoLocation in
+				'')
+					echo ""
+					;;
+				*)
+					echo "ERROR: invalid remote repo location: $remoteRepoLocation" >> sync_fork.errors
+					return 1
+					;;
+			esac
+			;;
+		'git')
+			case $remoteRepoLocation in
+				'blicky')
+					echo "git://g.blicky.net"
+					;;
+				'github')
+					echo "git://github.com/$accountName"
+					;;
+				'googlecode')
+					echo "git://code.google.com"
+					;;
+				'googlesource')
+					echo "git://$projectName.googlesource.com/$accountName"
+					;;
+				'videolan')
+					echo "git://git.videolan.org"
+					;;
+				*)
+					echo "ERROR: invalid remote repo location: $remoteRepoLocation" >> sync_fork.errors
+					return 1
+					;;
+			esac
+			;;
+		'hg')
+			case $remoteRepoLocation in
+				'bitbucket')
+					echo "https://bitbucket.org/$accountName"
+					;;
+				*)
+					echo "ERROR: invalid remote repo location: $remoteRepoLocation" >> sync_fork.errors
+					return 1
+					;;
+			esac
+			;;
+		'svn')
+			case $remoteRepoLocation in
+				'')
+					echo ""
+					;;
+				*)
+					echo "ERROR: invalid remote repo location: $remoteRepoLocation" >> sync_fork.errors
+					return 1
+					;;
+			esac
+			;;
+		*)
+			echo "ERROR: invalid remote repo vcs: $upstreamRepoVcs" >> sync_fork.errors
+			;;
+	esac
+
+}
+
+sync_fork () {
+
+	upstreamRepoVcs="${1}"
+	remoteRepoLocation="${2}"
+	repoName="${3}"
+	accountName="${4}"
+	projectName="${5}"
+
+	cd "$workDir"
+
+	git clone git://github.com/chlorm-forks/${repoName}.git
+	cd ${repoName}
+
+
+	# Check to see if repo has a remote upstream set
+	checkForUpstreamRemote=$(git remote | grep 'upstream' >> /dev/null)
+	# If not, add upstream remote
+	if [ -z "$checkForUpstreamRemote" ]; then
+		git remote add upstream $(upstream_url)/${repoName}.git || \
+		{ echo "$(date '+%F %R') ERROR: failed to add upstream remote to $repoName.git" >> sync_fork.errors ; return 1 ; }
+	fi
+
+	# Check to see if the upstream repo still exists
+	case $upstreamRepoVcs in
+		'bazaar')
+			echo
+			;;
+		'cvs')
+			echo
+			;;
+		'darcs')
+			echo
+			;;
+		'git')
+			git ls-remote --exit-code upstream
+			# If not, nothing to do
+			if test $? = 2; then
+				echo "ERROR: $repoName upstream unreachable" >> sync_fork.errors
+				return 1
+			fi
+			;;
+		'hg')
+			echo
+			;;
+		'svn')
+			echo
+			;;
+	esac
+
+	git fetch upstream
+
+	git pull upstream master
+
+	cd $workDir
+
+	if [ -d "$2" ]l then
+		rm -rf ${2}/
+	fi
+
+}
+
+# Blicky (git)
+#sync_fork git blicky ncdc
+#sync_fork git blicky ncdu
+
+# Bitbucket (git)
+
+# Bitbucket (hg)
+#sync_fork hg bitbucket x265 multicoreware
+
+# Github (git)
+sync_fork git github ceph ceph
+sync_fork git github evil-icons
+sync_fork git github influxdb influxdb
+sync_fork git github atlas Netflix
+sync_fork git github nix NixOS
+sync_fork git github nixpkgs NixOS
+sync_fork git github NodeBB NodeBB
+sync_fork git github reddit reddit
+sync_fork git github syncthing syncthing
+
+# Google Code (git)
+
+# Google Code (hg)
+
+# Google Code (svn)
+
+# Google Source (git)
+
+# Videolan (git)
