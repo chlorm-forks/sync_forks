@@ -18,7 +18,7 @@ upstream_url () {
 					echo ""
 					;;
 				*)
-					echo "$(log_date) ERROR: invalid remote repo location: $remoteRepoLocation" >> sync-fork.errors
+					echo "$(log_date) ERROR: invalid remote repo location: $remoteRepoLocation" >> $workDir/sync-fork.errors
 					return 1
 					;;
 			esac
@@ -29,7 +29,7 @@ upstream_url () {
 					echo ""
 					;;
 				*)
-					echo "$(log_date) ERROR: invalid remote repo location: $remoteRepoLocation" >> sync-fork.errors
+					echo "$(log_date) ERROR: invalid remote repo location: $remoteRepoLocation" >> $workDir/sync-fork.errors
 					return 1
 					;;
 			esac
@@ -40,7 +40,7 @@ upstream_url () {
 					echo ""
 					;;
 				*)
-					echo "$(log_date) ERROR: invalid remote repo location: $remoteRepoLocation" >> sync-fork.errors
+					echo "$(log_date) ERROR: invalid remote repo location: $remoteRepoLocation" >> $workDir/sync-fork.errors
 					return 1
 					;;
 			esac
@@ -63,7 +63,7 @@ upstream_url () {
 					echo "git://git.videolan.org"
 					;;
 				*)
-					echo "$(log_date) ERROR: invalid remote repo location: $remoteRepoLocation" >> sync-fork.errors
+					echo "$(log_date) ERROR: invalid remote repo location: $remoteRepoLocation" >> $workDir/sync-fork.errors
 					return 1
 					;;
 			esac
@@ -74,7 +74,7 @@ upstream_url () {
 					echo "https://bitbucket.org/$accountName"
 					;;
 				*)
-					echo "$(log_date) ERROR: invalid remote repo location: $remoteRepoLocation" >> sync-fork.errors
+					echo "$(log_date) ERROR: invalid remote repo location: $remoteRepoLocation" >> $workDir/sync-fork.errors
 					return 1
 					;;
 			esac
@@ -85,13 +85,13 @@ upstream_url () {
 					echo ""
 					;;
 				*)
-					echo "$(log_date) ERROR: invalid remote repo location: $remoteRepoLocation" >> sync-fork.errors
+					echo "$(log_date) ERROR: invalid remote repo location: $remoteRepoLocation" >> $workDir/sync-fork.errors
 					return 1
 					;;
 			esac
 			;;
 		*)
-			echo "$(log_date) ERROR: invalid remote repo vcs: $upstreamRepoVcs" >> sync-fork.errors
+			echo "$(log_date) ERROR: invalid remote repo vcs: $upstreamRepoVcs" >> $workDir/sync-fork.errors
 			;;
 	esac
 
@@ -117,7 +117,7 @@ sync_fork () {
 	# If not, add upstream remote
 	if [ -z "$checkForUpstreamRemote" ]; then
 		git remote add upstream "$(upstream_url)"/"${repoName}".git || \
-		{ echo "$(log_date) ERROR: failed to add upstream remote to $repoName.git" >> sync-fork.errors ; }
+		{ echo "$(log_date) ERROR: failed to add upstream remote to $repoName.git" >> $workDir/sync-fork.errors ; }
 	fi
 
 	# Check to see if the upstream repo still exists
@@ -134,7 +134,7 @@ sync_fork () {
 		'git')
 			git ls-remote --exit-code --heads "$(upstream_url)"/"${repoName}".git
 			if test $? = 2; then
-				echo "$(log_date) ERROR: $repoName upstream unreachable" >> sync-fork.errors
+				echo "$(log_date) ERROR: $repoName upstream unreachable" >> $workDir/sync-fork.errors
 				skipRepoUpdate="true"
 			fi
 			;;
@@ -147,17 +147,17 @@ sync_fork () {
 	esac
 
 	if [ "$skipRepoUpdate" == "false" ]; then
-		git fetch upstream || { echo "$(log_date) ERROR: git failed to fetch upstream for $repoName" >> sync-fork.errors ; }
+		git fetch upstream || { echo "$(log_date) ERROR: git failed to fetch upstream for $repoName" >> $workDir/sync-fork.errors ; }
 
-		git pull upstream master || { echo "$(log_date) ERROR: git pull failed for $repoName" >> sync-fork.errors ; }
+		git pull upstream master || { echo "$(log_date) ERROR: git pull failed for $repoName" >> $workDir/sync-fork.errors ; }
 
-		git push origin master || { echo "$(log_date) ERROR: git push failed for $repoName" >> sync-fork.errors ; }
+		git push origin master || { echo "$(log_date) ERROR: git push failed for $repoName" >> $workDir/sync-fork.errors ; }
 	fi
 
 	cd $workDir
 
 	if [ -d "$repoName" ]; then
-		rm -rf ${repoName}/ || { echo "$(log_date) ERROR: failed to remove $repoName" >> sync-fork.errors ; }
+		rm -rf ${repoName}/ || { echo "$(log_date) ERROR: failed to remove $repoName" >> $workDir/sync-fork.errors ; }
 	fi
 
 }
@@ -196,6 +196,7 @@ sync_fork git github entomonitor droundy
 sync_fork git github env darkhelmet
 sync_fork git github esoTalk esotalk
 sync_fork git github evil-icons outpunk
+sync-fork git github fake2db emirozer
 sync_fork git github ffmpeg-mr tstordyallison
 sync_fork git github flac.js audiocogs
 sync_fork git github Flat-UI designmodo
@@ -300,6 +301,7 @@ sync_fork git github Semantic-UI Semantic-Org
 sync_fork git github slap slap-editor
 sync_fork git github snappy google
 sync_fork git github split2flac ftrvxmtrx
+sync-fork git github Squire neilj
 sync_fork git github supler softwaremill
 sync_fork git github syncthing syncthing
 sync_fork git github taglib taglib
