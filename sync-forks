@@ -101,9 +101,10 @@ sync_fork () {
 
 	upstreamRepoVcs="${1}"
 	remoteRepoLocation="${2}"
-	repoName="${3}"
-	accountName="${4}"
-	projectName="${5}"
+	masterBranch="${3}"
+	repoName="${4}"
+	accountName="${5}"
+	projectName="${6}"
 	skipRepoUpdate="false"
 
 	cd "$workDir"
@@ -149,9 +150,9 @@ sync_fork () {
 	if [ "$skipRepoUpdate" == "false" ]; then
 		git fetch upstream || { echo "$(log_date) ERROR: git failed to fetch upstream for $repoName" >> $workDir/sync-fork.errors ; }
 
-		git pull upstream master || { echo "$(log_date) ERROR: git pull failed for $repoName" >> $workDir/sync-fork.errors ; }
+		git pull upstream "$masterBranch" || { echo "$(log_date) ERROR: git pull failed for $repoName" >> $workDir/sync-fork.errors ; }
 
-		git push origin master || { echo "$(log_date) ERROR: git push failed for $repoName" >> $workDir/sync-fork.errors ; }
+		git push origin "$masterBranch" || { echo "$(log_date) ERROR: git push failed for $repoName" >> $workDir/sync-fork.errors ; }
 	fi
 
 	cd $workDir
@@ -161,6 +162,8 @@ sync_fork () {
 	fi
 
 }
+
+# sync_fork vcs service master_branch repo_name account_name project_name
 
 # Blicky (git)
 #sync_fork git blicky ncdc
@@ -172,151 +175,153 @@ sync_fork () {
 #sync_fork hg bitbucket x265 multicoreware
 
 # Github (git)
-sync_fork git github atlas Netflix
-sync_fork git github beets sampsyo
-sync_fork git github bgpanel warhawk3407
-sync_fork git github blackfriday russross
-sync_fork git github bone squiidz
-sync_fork git github btree google
-sync_fork git github cache2go rif
-sync_fork git github calamari ceph
-sync_fork git github cdnstats antage
-sync_fork git github ceph ceph
-sync_fork git github chub vchimishuk
-sync_fork git github codeworld google
-sync_fork git github consul hashicorp
-sync_fork git github consul-alerts AcalephStorage
-sync_fork git github CoverflowAltTab dmo60
-sync_fork git github cpu jpoirier
-sync_fork git github deepboost google
-sync_fork git github dl nf
-sync_fork git github donut dforsyth
-sync_fork git github eiskaltdcpp eiskaltdcpp
-sync_fork git github entomonitor droundy
-sync_fork git github env darkhelmet
-sync_fork git github esoTalk esotalk
-sync_fork git github evil-icons outpunk
-sync-fork git github fake2db emirozer
-sync_fork git github ffmpeg-mr tstordyallison
-sync_fork git github flac.js audiocogs
-sync_fork git github Flat-UI designmodo
-sync_fork git github flowplayer flowplayer
-sync_fork git github fnd xarg
-sync_fork git github fsnotify howeyc
-sync_fork git github fuse bazillion
-sync_fork git github Gentoo_Portage_com mikevalstar
-sync_fork git github github-buttons mdo
-sync_fork git github gmusicbrowser squentin
-sync_fork git github gnome-shell-extension-battery_status milliburn
-sync_fork git github gnome-shell-headphone-indicator mengzhuo
-sync_fork git github gnome-shell-remove-dropdown-arrows mpdeimos
-sync_fork git github go.tftp brooksbp
-sync_fork git github go-fuse hanwen
-sync_fork git github go-github google
-sync_fork git github go-libpq jgallagher
-sync_fork git github go-pgsql lxn
-sync_fork git github go-systemd ehmry
-sync_fork git github go-taglib wtolson
-sync_fork git github go-tpm google
-sync_fork git github go-webdav
-sync_fork git github go-xmpp mattn
-sync_fork git github gocurse jabb
-sync_fork git github gocurses tncardoso
-sync_fork git github gogs gogits
-sync_fork git github GoHM rainliu
-sync_fork git github gohttptun nf
-sync_fork git github gompd fhs
-sync_fork git github goobox GNOME
-sync_fork git github goplayer nf
-sync_fork git github gopp skelterjohn
-sync_fork git github goriakpbc tpjg
-sync_fork git github goto nf
-sync_fork git github GoVisa rainliu
-sync_fork git github gowiki jmoiron
-sync_fork git github gowiki-mux adred
-sync_fork git github grong bortzmeyer
-sync_fork git github hesokuri google
-sync_fork git github htop hishamhm
-sync_fork git github httprouter julienschmidt
-sync_fork git github hugo spf13
-sync_fork git github hydra NixOS
-sync_fork git github identity-toolkit-go-client
-sync_fork git github influxdb influxdb
-sync_fork git github iothrottler
-sync_fork git github LaTeXTools SublimeText
-sync_fork git github lhnb liskin
-sync_fork git github lime limetext
-sync_fork git github malus distributed
-sync_fork git github MarkdownEditing SublimeText-Markdown
-sync_fork git github Metro-UI-CSS olton
-sync_fork git github mpDris2 eonpatapon
-sync_fork git github Music-Integration brianrobles204
-sync_fork git github Music-LastFM riemann42
-sync_fork git github Music-Tag riemann42
-sync_fork git github Music-Tag-Amazon riemann42
-sync_fork git github Music-Tag-File riemann42
-sync_fork git github Music-Tag-FLAC riemann42
-sync_fork git github Music-Tag-LyricsFetcher riemann42
-sync_fork git github Music-Tag-M4A riemann42
-sync_fork git github Music-Tag-MP3 riemann42
-sync_fork git github Music-Tag-MusicBrainz riemann42
-sync_fork git github Music-Tag-OGG riemann42
-sync_fork git github MusicFS thereapman
-sync_fork git github mysqlenv shim0mura
-sync_fork git github netsnail PerArneng
-sync_fork git github nix NixOS
-sync_fork git github nixos NixOS
-sync_fork git github nixos-artwork NixOS
-sync_fork git github nixpkgs NixOS
-sync_fork git github NodeBB NodeBB
-sync_fork git github oggflacblock imalone
-sync_fork git github open-location-code google
-sync_fork git github opencompute facebookarchive
-sync_fork git github os measure
-sync_fork git github osquery facebook
-sync_fork git github paramgmt google
-sync_fork git github perl-audio-flac-header
-sync_fork git github pgsql.go jbarham
-sync_fork git github pgsql-utils snaga
-sync_fork git github pgsqlenv yutakat
-sync_fork git github pgx jackc
-sync_fork git github picard musicbrainz
-sync_fork git github picard-plugins musicbrainz
-sync_fork git github pickup werkshy
-sync_fork git github PostgresApp PostgresApp
-sync_fork git github PowerShell SublimeText
-sync_fork git github pq lib
-sync_fork git github pull-request-mailer google
-sync_fork git github pulsego moriyoshi
-sync_fork git github pure yahoo
-sync_fork git github reddit reddit
-sync_fork git github revel revel
-sync_fork git github rfc mislav
-sync_fork git github riak basho
-sync_fork git github riako jkassemi
-sync_fork git github rsync julian-gutierrez-o
-sync_fork git github rutorrent-auto-installer-centos etiennerached
-sync_fork git github salt saltstack
-sync_fork git github Semantic-UI Semantic-Org
-sync_fork git github slap slap-editor
-sync_fork git github snappy google
-sync_fork git github split2flac ftrvxmtrx
-sync-fork git github Squire neilj
-sync_fork git github supler softwaremill
-sync_fork git github syncthing syncthing
-sync_fork git github taglib taglib
-sync_fork git github theory ralfonso
-sync_fork git github tigertree udoprog
-sync_fork git github U-232-V3 Bigjoos
-sync_fork git github uhub janvidar
-sync_fork git github video.js videojs
-sync_fork git github wav nf
-sync_fork git github wcld ryandotsmith
-sync_fork git github wgo royger
-sync_fork git github what-cd-scripts gmcabrita
-sync_fork git github xsecurelock google
-sync_fork git github ympd notandy
-sync_fork git github yoink phracker
+sync_fork git github master atlas Netflix
+sync_fork git github master beets sampsyo
+sync_fork git github master bgpanel warhawk3407
+sync_fork git github master blackfriday russross
+sync_fork git github master bone squiidz
+sync_fork git github master btree google
+sync_fork git github master cache2go rif
+sync_fork git github master calamari ceph
+sync_fork git github master cdnstats antage
+sync_fork git github master ceph ceph
+sync_fork git github master chub vchimishuk
+sync_fork git github master codeworld google
+sync_fork git github master consul hashicorp
+sync_fork git github master consul-alerts AcalephStorage
+sync_fork git github master CoverflowAltTab dmo60
+sync_fork git github master cpu jpoirier
+sync_fork git github master deepboost google
+sync_fork git github master dl nf
+sync_fork git github master donut dforsyth
+sync_fork git github master eiskaltdcpp eiskaltdcpp
+sync_fork git github master entomonitor droundy
+sync_fork git github master env darkhelmet
+sync_fork git github develop esoTalk esotalk
+sync_fork git github master evil-icons outpunk
+sync-fork git github master fake2db emirozer
+sync_fork git github master ffmpeg-mr tstordyallison
+sync_fork git github master flac.js audiocogs
+sync_fork git github master Flat-UI designmodo
+sync_fork git github master flowplayer flowplayer
+sync_fork git github master fnd xarg
+sync_fork git github master fsnotify howeyc
+sync_fork git github master fuse bazillion
+sync_fork git github master Gentoo_Portage_com mikevalstar
+sync_fork git github master github-buttons mdo
+sync_fork git github master gmusicbrowser squentin
+sync_fork git github master gnome-shell-extension-battery_status milliburn
+sync_fork git github master gnome-shell-headphone-indicator mengzhuo
+sync_fork git github master gnome-shell-remove-dropdown-arrows mpdeimos
+sync_fork git github master go.tftp brooksbp
+sync_fork git github master go-fuse hanwen
+sync_fork git github master go-github google
+sync_fork git github master go-libpq jgallagher
+sync_fork git github master go-pgsql lxn
+sync_fork git github master go-systemd ehmry
+sync_fork git github master go-taglib wtolson
+sync_fork git github master go-tpm google
+sync_fork git github master go-webdav google
+sync_fork git github master go-xmpp mattn
+sync_fork git github master gocurse jabb
+sync_fork git github master gocurses tncardoso
+sync_fork git github master gogs gogits
+sync_fork git github master GoHM rainliu
+sync_fork git github master gohttptun nf
+sync_fork git github master gompd fhs
+sync_fork git github master goobox GNOME
+sync_fork git github master goplayer nf
+sync_fork git github master gopp skelterjohn
+sync_fork git github master goriakpbc tpjg
+sync_fork git github master goto nf
+sync_fork git github master GoVisa rainliu
+sync_fork git github master gowiki jmoiron
+sync_fork git github master gowiki-mux adred
+sync_fork git github master grong bortzmeyer
+sync_fork git github master hesokuri google
+sync_fork git github master htop hishamhm
+sync_fork git github master httprouter julienschmidt
+sync_fork git github master hugo spf13
+sync_fork git github master hydra NixOS
+sync_fork git github master identity-toolkit-go-client google
+sync_fork git github master influxdb influxdb
+sync_fork git github master iothrottler efarrer
+sync_fork git github master LaTeXTools SublimeText
+sync_fork git github master lhnb liskin
+sync_fork git github master lime limetext
+sync_fork git github master malus distributed
+sync_fork git github master MarkdownEditing SublimeText-Markdown
+sync_fork git github master Metro-UI-CSS olton
+sync_fork git github master mpDris2 eonpatapon
+sync_fork git github master Music-Integration brianrobles204
+sync_fork git github master Music-LastFM riemann42
+sync_fork git github master Music-Tag riemann42
+sync_fork git github master Music-Tag-Amazon riemann42
+sync_fork git github master Music-Tag-File riemann42
+sync_fork git github master Music-Tag-FLAC riemann42
+sync_fork git github master Music-Tag-LyricsFetcher riemann42
+sync_fork git github master Music-Tag-M4A riemann42
+sync_fork git github master Music-Tag-MP3 riemann42
+sync_fork git github master Music-Tag-MusicBrainz riemann42
+sync_fork git github master Music-Tag-OGG riemann42
+sync_fork git github master MusicFS thereapman
+sync_fork git github master mysqlenv shim0mura
+sync_fork git github master netsnail PerArneng
+sync_fork git github master nix NixOS
+sync_fork git github master nixos NixOS
+sync_fork git github master nixos-artwork NixOS
+sync_fork git github master nixpkgs NixOS
+sync_fork git github master NodeBB NodeBB
+sync_fork git github master oggflacblock imalone
+sync_fork git github master open-location-code google
+sync_fork git github master opencompute facebookarchive
+sync_fork git github master os measure
+sync_fork git github master osquery facebook
+sync_fork git github master paramgmt google
+sync_fork git github master perl-audio-flac-decoder dsully
+sync_fork git github master perl-audio-flac-header dsully
+sync_fork git github master pgsql.go jbarham
+sync_fork git github master pgsql-utils snaga
+sync_fork git github master pgsqlenv yutakat
+sync_fork git github master pgx jackc
+sync_fork git github master picard musicbrainz
+sync_fork git github master picard-plugins musicbrainz
+sync_fork git github master pickup werkshy
+sync_fork git github master PostgresApp PostgresApp
+sync_fork git github master PowerShell SublimeText
+sync_fork git github master pq lib
+sync_fork git github master pull-request-mailer google
+sync_fork git github master pulsego moriyoshi
+sync_fork git github master pure yahoo
+sync_fork git github master reddit reddit
+sync_fork git github master revel revel
+sync_fork git github master rfc mislav
+sync_fork git github develop riak basho
+sync_fork git github master riako jkassemi
+sync_fork git github master rsync julian-gutierrez-o
+sync_fork git github master rutorrent-auto-installer-centos etiennerached
+sync_fork git github develop salt saltstack
+sync_fork git github master Semantic-UI Semantic-Org
+sync_fork git github master slap slap-editor
+sync_fork git github master snappy google
+sync_fork git github master split2flac ftrvxmtrx
+sync_fork git github master Squire neilj
+sync_fork git github master supler softwaremill
+sync_fork git github master SVG-Loaders SamHerbert
+sync_fork git github master syncthing syncthing
+sync_fork git github master taglib taglib
+sync_fork git github master theory ralfonso
+sync_fork git github master tigertree udoprog
+sync_fork git github master U-232-V3 Bigjoos
+sync_fork git github master uhub janvidar
+sync_fork git github master video.js videojs
+sync_fork git github master wav nf
+sync_fork git github master wcld ryandotsmith
+sync_fork git github master wgo royger
+sync_fork git github master what-cd-scripts gmcabrita
+sync_fork git github master xsecurelock google
+sync_fork git github master ympd notandy
+sync_fork git github master yoink phracker
 
 # Google Code (git)
 
