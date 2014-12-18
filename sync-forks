@@ -146,7 +146,7 @@ sync_fork () {
 			;;
 	esac
 
-	if [ "$skipRepoUpdate" -ne "true" ]; then
+	if [ "$skipRepoUpdate" == "false" ]; then
 		git fetch upstream || { echo "$(log_date) ERROR: git failed to fetch upstream for $repoName" >> sync-fork.errors ; }
 
 		git pull upstream master || { echo "$(log_date) ERROR: git pull failed for $repoName" >> sync-fork.errors ; }
