@@ -3,6 +3,12 @@
 # Current directory is used as the working directory
 workDir=$(pwd)
 
+log_date () {
+
+	date '+%F %R'
+
+}
+
 upstream_url () {
 
 	case $upstreamRepoVcs in
@@ -12,7 +18,7 @@ upstream_url () {
 					echo ""
 					;;
 				*)
-					echo "ERROR: invalid remote repo location: $remoteRepoLocation" >> sync_fork.errors
+					echo "$(log_date) ERROR: invalid remote repo location: $remoteRepoLocation" >> sync-fork.errors
 					return 1
 					;;
 			esac
@@ -23,7 +29,7 @@ upstream_url () {
 					echo ""
 					;;
 				*)
-					echo "ERROR: invalid remote repo location: $remoteRepoLocation" >> sync_fork.errors
+					echo "$(log_date) ERROR: invalid remote repo location: $remoteRepoLocation" >> sync-fork.errors
 					return 1
 					;;
 			esac
@@ -34,7 +40,7 @@ upstream_url () {
 					echo ""
 					;;
 				*)
-					echo "ERROR: invalid remote repo location: $remoteRepoLocation" >> sync_fork.errors
+					echo "$(log_date) ERROR: invalid remote repo location: $remoteRepoLocation" >> sync-fork.errors
 					return 1
 					;;
 			esac
@@ -57,7 +63,7 @@ upstream_url () {
 					echo "git://git.videolan.org"
 					;;
 				*)
-					echo "ERROR: invalid remote repo location: $remoteRepoLocation" >> sync_fork.errors
+					echo "$(log_date) ERROR: invalid remote repo location: $remoteRepoLocation" >> sync-fork.errors
 					return 1
 					;;
 			esac
@@ -68,7 +74,7 @@ upstream_url () {
 					echo "https://bitbucket.org/$accountName"
 					;;
 				*)
-					echo "ERROR: invalid remote repo location: $remoteRepoLocation" >> sync_fork.errors
+					echo "$(log_date) ERROR: invalid remote repo location: $remoteRepoLocation" >> sync-fork.errors
 					return 1
 					;;
 			esac
@@ -79,13 +85,13 @@ upstream_url () {
 					echo ""
 					;;
 				*)
-					echo "ERROR: invalid remote repo location: $remoteRepoLocation" >> sync_fork.errors
+					echo "$(log_date) ERROR: invalid remote repo location: $remoteRepoLocation" >> sync-fork.errors
 					return 1
 					;;
 			esac
 			;;
 		*)
-			echo "ERROR: invalid remote repo vcs: $upstreamRepoVcs" >> sync_fork.errors
+			echo "$(log_date) ERROR: invalid remote repo vcs: $upstreamRepoVcs" >> sync-fork.errors
 			;;
 	esac
 
@@ -98,6 +104,7 @@ sync_fork () {
 	repoName="${3}"
 	accountName="${4}"
 	projectName="${5}"
+	skipRepoUpdate="false"
 
 	cd "$workDir"
 
@@ -110,7 +117,7 @@ sync_fork () {
 	# If not, add upstream remote
 	if [ -z "$checkForUpstreamRemote" ]; then
 		git remote add upstream "$(upstream_url)"/"${repoName}".git || \
-		{ echo "$(date '+%F %R') ERROR: failed to add upstream remote to $repoName.git" >> sync_fork.errors ; }
+		{ echo "$(log_date) ERROR: failed to add upstream remote to $repoName.git" >> sync-fork.errors ; }
 	fi
 
 	# Check to see if the upstream repo still exists
@@ -125,10 +132,10 @@ sync_fork () {
 			echo
 			;;
 		'git')
-			git ls-remote --exit-code upstream
-			# If not, nothing to do
+			git ls-remote --exit-code --heads "$(upstream_url)"/"${repoName}".git
 			if test $? = 2; then
-				echo "ERROR: $repoName upstream unreachable" >> sync_fork.errors
+				echo "$(log_date) ERROR: $repoName upstream unreachable" >> sync-fork.errors
+				skipRepoUpdate="true"
 			fi
 			;;
 		'hg')
@@ -139,16 +146,18 @@ sync_fork () {
 			;;
 	esac
 
-	git fetch upstream
+	if [ "$skipRepoUpdate" -ne "true" ]; then
+		git fetch upstream || { echo "$(log_date) ERROR: git failed to fetch upstream for $repoName" >> sync-fork.errors ; }
 
-	git pull upstream master
+		git pull upstream master || { echo "$(log_date) ERROR: git pull failed for $repoName" >> sync-fork.errors ; }
 
-	git push origin master
+		git push origin master || { echo "$(log_date) ERROR: git push failed for $repoName" >> sync-fork.errors ; }
+	fi
 
 	cd $workDir
 
 	if [ -d "$repoName" ]; then
-		rm -rf ${repoName}/
+		rm -rf ${repoName}/ || { echo "$(log_date) ERROR: failed to remove $repoName" >> sync-fork.errors ; }
 	fi
 
 }
