@@ -5,161 +5,161 @@ workDir=$(pwd)
 
 log_date () {
 
-	date '+%F %R'
+  date '+%F %R'
 
 }
 
 upstream_url () {
 
-	case $upstreamRepoVcs in
-		'bazaar')
-			case $remoteRepoLocation in
-				'')
-					echo ""
-					;;
-				*)
-					echo "$(log_date) ERROR: invalid remote repo location: $remoteRepoLocation" >> $workDir/sync-fork.errors
-					return 1
-					;;
-			esac
-			;;
-		'cvs')
-			case $remoteRepoLocation in
-				'')
-					echo ""
-					;;
-				*)
-					echo "$(log_date) ERROR: invalid remote repo location: $remoteRepoLocation" >> $workDir/sync-fork.errors
-					return 1
-					;;
-			esac
-			;;
-		'darcs')
-			case $remoteRepoLocation in
-				'')
-					echo ""
-					;;
-				*)
-					echo "$(log_date) ERROR: invalid remote repo location: $remoteRepoLocation" >> $workDir/sync-fork.errors
-					return 1
-					;;
-			esac
-			;;
-		'git')
-			case $remoteRepoLocation in
-				'blicky')
-					echo "git://g.blicky.net"
-					;;
-				'github')
-					echo "git@github.com:$accountName"
-					;;
-				'googlecode')
-					echo "git://code.google.com"
-					;;
-				'googlesource')
-					echo "git://$projectName.googlesource.com/$accountName"
-					;;
-				'videolan')
-					echo "git://git.videolan.org"
-					;;
-				*)
-					echo "$(log_date) ERROR: invalid remote repo location: $remoteRepoLocation" >> $workDir/sync-fork.errors
-					return 1
-					;;
-			esac
-			;;
-		'hg')
-			case $remoteRepoLocation in
-				'bitbucket')
-					echo "https://bitbucket.org/$accountName"
-					;;
-				*)
-					echo "$(log_date) ERROR: invalid remote repo location: $remoteRepoLocation" >> $workDir/sync-fork.errors
-					return 1
-					;;
-			esac
-			;;
-		'svn')
-			case $remoteRepoLocation in
-				'')
-					echo ""
-					;;
-				*)
-					echo "$(log_date) ERROR: invalid remote repo location: $remoteRepoLocation" >> $workDir/sync-fork.errors
-					return 1
-					;;
-			esac
-			;;
-		*)
-			echo "$(log_date) ERROR: invalid remote repo vcs: $upstreamRepoVcs" >> $workDir/sync-fork.errors
-			;;
-	esac
+  case $upstreamRepoVcs in
+    'bazaar')
+      case $remoteRepoLocation in
+        '')
+          echo ""
+          ;;
+        *)
+          echo "$(log_date) ERROR: invalid remote repo location: $remoteRepoLocation" >> $workDir/sync-fork.errors
+          return 1
+          ;;
+      esac
+      ;;
+      'cvs')
+        case $remoteRepoLocation in
+          '')
+            echo ""
+            ;;
+          *)
+            echo "$(log_date) ERROR: invalid remote repo location: $remoteRepoLocation" >> $workDir/sync-fork.errors
+            return 1
+            ;;
+        esac
+        ;;
+      'darcs')
+        case $remoteRepoLocation in
+          '')
+            echo ""
+            ;;
+          *)
+            echo "$(log_date) ERROR: invalid remote repo location: $remoteRepoLocation" >> $workDir/sync-fork.errors
+            return 1
+            ;;
+        esac
+        ;;
+      'git')
+        case $remoteRepoLocation in
+          'blicky')
+            echo "git://g.blicky.net"
+            ;;
+          'github')
+            echo "git@github.com:$accountName"
+            ;;
+          'googlecode')
+            echo "git://code.google.com"
+            ;;
+          'googlesource')
+            echo "git://$projectName.googlesource.com/$accountName"
+            ;;
+          'videolan')
+            echo "git://git.videolan.org"
+            ;;
+          *)
+            echo "$(log_date) ERROR: invalid remote repo location: $remoteRepoLocation" >> $workDir/sync-fork.errors
+            return 1
+            ;;
+        esac
+        ;;
+      'hg')
+        case $remoteRepoLocation in
+          'bitbucket')
+            echo "https://bitbucket.org/$accountName"
+            ;;
+          *)
+            echo "$(log_date) ERROR: invalid remote repo location: $remoteRepoLocation" >> $workDir/sync-fork.errors
+            return 1
+            ;;
+        esac
+        ;;
+      'svn')
+        case $remoteRepoLocation in
+          '')
+            echo ""
+            ;;
+          *)
+            echo "$(log_date) ERROR: invalid remote repo location: $remoteRepoLocation" >> $workDir/sync-fork.errors
+            return 1
+            ;;
+        esac
+        ;;
+      *)
+        echo "$(log_date) ERROR: invalid remote repo vcs: $upstreamRepoVcs" >> $workDir/sync-fork.errors
+        ;;
+  esac
 
 }
 
 sync_fork () {
 
-	upstreamRepoVcs="${1}"
-	remoteRepoLocation="${2}"
-	masterBranch="${3}"
-	repoName="${4}"
-	accountName="${5}"
-	projectName="${6}"
-	skipRepoUpdate="false"
+  upstreamRepoVcs="${1}"
+  remoteRepoLocation="${2}"
+  masterBranch="${3}"
+  repoName="${4}"
+  accountName="${5}"
+  projectName="${6}"
+  skipRepoUpdate="false"
 
-	cd "$workDir"
+  cd "$workDir"
 
-	git clone git@github.com:chlorm-forks/"${repoName}".git
-	cd ${repoName}
+  git clone git@github.com:chlorm-forks/"${repoName}".git
+  cd ${repoName}
 
 
-	# Check to see if repo has a remote upstream set
-	checkForUpstreamRemote=$(git remote | grep 'upstream' > /dev/null)
-	# If not, add upstream remote
-	if [ -z "$checkForUpstreamRemote" ]; then
-		git remote add upstream "$(upstream_url)"/"${repoName}".git || \
-		{ echo "$(log_date) ERROR: failed to add upstream remote to $repoName.git" >> $workDir/sync-fork.errors ; }
-	fi
+  # Check to see if repo has a remote upstream set
+  checkForUpstreamRemote=$(git remote | grep 'upstream' > /dev/null)
+  # If not, add upstream remote
+  if [ -z "$checkForUpstreamRemote" ]; then
+    git remote add upstream "$(upstream_url)"/"${repoName}".git || \
+    { echo "$(log_date) ERROR: failed to add upstream remote to $repoName.git" >> $workDir/sync-fork.errors ; }
+  fi
 
-	# Check to see if the upstream repo still exists
-	case $upstreamRepoVcs in
-		'bazaar')
-			echo
-			;;
-		'cvs')
-			echo
-			;;
-		'darcs')
-			echo
-			;;
-		'git')
-			git ls-remote --exit-code --heads "$(upstream_url)"/"${repoName}".git
-			if test $? = 2; then
-				echo "$(log_date) ERROR: $repoName upstream unreachable" >> $workDir/sync-fork.errors
-				skipRepoUpdate="true"
-			fi
-			;;
-		'hg')
-			echo
-			;;
-		'svn')
-			echo
-			;;
-	esac
+  # Check to see if the upstream repo still exists
+  case $upstreamRepoVcs in
+    'bazaar')
+      return 0
+      ;;
+    'cvs')
+      return 0
+      ;;
+    'darcs')
+      return 0
+      ;;
+    'git')
+      git ls-remote --exit-code --heads "$(upstream_url)"/"${repoName}".git
+      if test $? = 2; then
+        echo "$(log_date) ERROR: $repoName upstream unreachable" >> $workDir/sync-fork.errors
+        skipRepoUpdate="true"
+      fi
+      ;;
+    'hg')
+      return 0
+      ;;
+    'svn')
+      return 0
+      ;;
+  esac
 
-	if [ "$skipRepoUpdate" == "false" ]; then
-		git fetch upstream || { echo "$(log_date) ERROR: git failed to fetch upstream for $repoName" >> $workDir/sync-fork.errors ; }
+  if [ "$skipRepoUpdate" == "false" ]; then
+    git fetch upstream || { echo "$(log_date) ERROR: git failed to fetch upstream for $repoName" >> $workDir/sync-fork.errors ; }
 
-		git pull upstream "$masterBranch" || { echo "$(log_date) ERROR: git pull failed for $repoName" >> $workDir/sync-fork.errors ; }
+    git pull upstream "$masterBranch" || { echo "$(log_date) ERROR: git pull failed for $repoName" >> $workDir/sync-fork.errors ; }
 
-		git push origin "$masterBranch" || { echo "$(log_date) ERROR: git push failed for $repoName" >> $workDir/sync-fork.errors ; }
-	fi
+    git push origin "$masterBranch" || { echo "$(log_date) ERROR: git push failed for $repoName" >> $workDir/sync-fork.errors ; }
+  fi
 
-	cd $workDir
+  cd $workDir
 
-	if [ -d "$repoName" ]; then
-		rm -rf ${repoName}/ || { echo "$(log_date) ERROR: failed to remove $repoName" >> $workDir/sync-fork.errors ; }
-	fi
+  if [ -d "$repoName" ]; then
+    rm -rf ${repoName}/ || { echo "$(log_date) ERROR: failed to remove $repoName" >> $workDir/sync-fork.errors ; }
+  fi
 
 }
 
@@ -224,8 +224,10 @@ sync_fork git github master fsnotify howeyc
 sync_fork git github master fuse bazillion
 sync_fork git github master futon zond
 sync_fork git github master Gentoo_Portage_com mikevalstar
+sync_fork git github master gentoo-portage-rsync-mirror gentoo
 sync_fork git github master gin codegangsta
 sync_fork git github master github-buttons mdo
+sync_fork git github master gitrob michenriksen
 sync_fork git github master gmusicbrowser squentin
 sync_fork git github master gnome-shell-extension-battery_status milliburn
 sync_fork git github master gnome-shell-headphone-indicator mengzhuo
@@ -275,6 +277,7 @@ sync_fork git github master LaTeXTools SublimeText
 sync_fork git github master leaps Jeffail
 sync_fork git github master lhnb liskin
 sync_fork git github master libtorrent rakshasa
+sync_fork git github master libvpx webmproject
 sync_fork git github master lime limetext
 sync_fork git github master liteide visualfc
 sync_fork git github master logstash elasticsearch
@@ -284,6 +287,7 @@ sync_fork git github master MarkdownEditing SublimeText-Markdown
 sync_fork git github master Metro-UI-CSS olton
 sync_fork git github master modbus goburrow
 sync_fork git github master mpDris2 eonpatapon
+sync_fork git github master mpeg4ip stsquad
 sync_fork git github master multibar sethgrid
 sync_fork git github master Music-Integration brianrobles204
 sync_fork git github master Music-LastFM riemann42
@@ -306,6 +310,8 @@ sync_fork git github master nixpkgs NixOS
 sync_fork git github master NodeBB NodeBB
 sync_fork git github master oggflacblock imalone
 sync_fork git github master open-location-code google
+sync_fork git github master openbay isohuntto
+sync_fork git github master openbay-db-dump isohuntto
 sync_fork git github master opencompute facebookarchive
 sync_fork git github master os measure
 sync_fork git github master osquery facebook
