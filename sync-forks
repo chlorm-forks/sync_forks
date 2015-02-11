@@ -157,6 +157,7 @@ sync_fork() {
       echo "$(log_date) ERROR: git pull failed for $repoName" >> $workDir/sync-fork.errors
     }
 
+    # Never use --force, could result in data loss in some cases
     git push origin "$masterBranch" || {
       echo "$(log_date) ERROR: git push failed for $repoName" >> $workDir/sync-fork.errors
     }
@@ -210,6 +211,7 @@ sync_fork git github master consul hashicorp
 sync_fork git github master consul-alerts AcalephStorage
 sync_fork git github master CoverflowAltTab dmo60
 sync_fork git github master cpu jpoirier
+sync_fork git github master css-layout facebook
 sync_fork git github master deepboost google
 sync_fork git github master dl nf
 sync_fork git github master docker docker
@@ -273,6 +275,7 @@ sync_fork git github master grong bortzmeyer
 sync_fork git github master hack xorg62
 sync_fork git github master henchman sudharsh
 sync_fork git github master hesokuri google
+sync_fork git github master htaccess phanan
 sync_fork git github master htop hishamhm
 sync_fork git github master http2 bradfitz
 sync_fork git github master httprouter julienschmidt
@@ -341,6 +344,8 @@ sync_fork git github master pq lib
 sync_fork git github master pull-request-mailer google
 sync_fork git github master pulsego moriyoshi
 sync_fork git github master pure yahoo
+sync_fork git github master react facebook
+sync_fork git github master react-canvas facebook
 sync_fork git github master reddit reddit
 sync_fork git github master revel revel
 sync_fork git github master rfc mislav
