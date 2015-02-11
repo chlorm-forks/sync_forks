@@ -3,13 +3,13 @@
 # Current directory is used as the working directory
 workDir=$(pwd)
 
-log_date () {
+log_date() {
 
   date '+%F %R'
 
 }
 
-upstream_url () {
+upstream_url() {
 
   case $upstreamRepoVcs in
     'bazaar')
@@ -97,7 +97,7 @@ upstream_url () {
 
 }
 
-sync_fork () {
+sync_fork() {
 
   upstreamRepoVcs="${1}"
   remoteRepoLocation="${2}"
@@ -116,10 +116,11 @@ sync_fork () {
   # Check to see if repo has a remote upstream set
   checkForUpstreamRemote=$(git remote | grep 'upstream' > /dev/null)
   # If not, add upstream remote
-  if [ -z "$checkForUpstreamRemote" ]; then
-    git remote add upstream "$(upstream_url)"/"${repoName}".git || \
-    { echo "$(log_date) ERROR: failed to add upstream remote to $repoName.git" >> $workDir/sync-fork.errors ; }
-  fi
+  [ -z "$checkForUpstreamRemote" ] && {
+    git remote add upstream "$(upstream_url)"/"${repoName}".git || {
+      echo "$(log_date) ERROR: failed to add upstream remote to $repoName.git" >> $workDir/sync-fork.errors
+    }
+  }
 
   # Check to see if the upstream repo still exists
   case $upstreamRepoVcs in
@@ -134,7 +135,7 @@ sync_fork () {
       ;;
     'git')
       git ls-remote --exit-code --heads "$(upstream_url)"/"${repoName}".git
-      if test $? = 2; then
+      if test $? = 2 ; then
         echo "$(log_date) ERROR: $repoName upstream unreachable" >> $workDir/sync-fork.errors
         skipRepoUpdate="true"
       fi
@@ -147,19 +148,27 @@ sync_fork () {
       ;;
   esac
 
-  if [ "$skipRepoUpdate" == "false" ]; then
-    git fetch upstream || { echo "$(log_date) ERROR: git failed to fetch upstream for $repoName" >> $workDir/sync-fork.errors ; }
+  [ "$skipRepoUpdate" == "false" ] && {
+    git fetch upstream || {
+      echo "$(log_date) ERROR: git failed to fetch upstream for $repoName" >> $workDir/sync-fork.errors
+    }
 
-    git pull upstream "$masterBranch" || { echo "$(log_date) ERROR: git pull failed for $repoName" >> $workDir/sync-fork.errors ; }
+    git pull upstream "$masterBranch" || {
+      echo "$(log_date) ERROR: git pull failed for $repoName" >> $workDir/sync-fork.errors
+    }
 
-    git push origin "$masterBranch" || { echo "$(log_date) ERROR: git push failed for $repoName" >> $workDir/sync-fork.errors ; }
-  fi
+    git push origin "$masterBranch" || {
+      echo "$(log_date) ERROR: git push failed for $repoName" >> $workDir/sync-fork.errors
+    }
+  }
 
   cd $workDir
 
-  if [ -d "$repoName" ]; then
-    rm -rf ${repoName}/ || { echo "$(log_date) ERROR: failed to remove $repoName" >> $workDir/sync-fork.errors ; }
-  fi
+  [ -d "$repoName" ] && {
+    rm -rf ${repoName}/ || {
+      echo "$(log_date) ERROR: failed to remove $repoName" >> $workDir/sync-fork.errors
+    }
+  }
 
 }
 
