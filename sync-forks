@@ -1,11 +1,11 @@
 #!/usr/bin/env sh
 
 # Current directory is used as the working directory
-workDir=$(pwd)
+export workDir=$(pwd)
 
-log_date() {
+log_error() {
 
-  date '+%F %R'
+  echo "$(date '+%F %R') $@" >> $workDir/sync-fork.errors
 
 }
 
@@ -18,7 +18,7 @@ upstream_url() {
           echo ""
           ;;
         *)
-          echo "$(log_date) ERROR: invalid remote repo location: $remoteRepoLocation" >> $workDir/sync-fork.errors
+          log_error "invalid remote repo location: $remoteRepoLocation"
           return 1
           ;;
       esac
@@ -29,7 +29,7 @@ upstream_url() {
             echo ""
             ;;
           *)
-            echo "$(log_date) ERROR: invalid remote repo location: $remoteRepoLocation" >> $workDir/sync-fork.errors
+            log_error "invalid remote repo location: $remoteRepoLocation"\
             return 1
             ;;
         esac
@@ -40,7 +40,7 @@ upstream_url() {
             echo ""
             ;;
           *)
-            echo "$(log_date) ERROR: invalid remote repo location: $remoteRepoLocation" >> $workDir/sync-fork.errors
+            log_error "invalid remote repo location: $remoteRepoLocation"
             return 1
             ;;
         esac
@@ -63,7 +63,7 @@ upstream_url() {
             echo "git://git.videolan.org"
             ;;
           *)
-            echo "$(log_date) ERROR: invalid remote repo location: $remoteRepoLocation" >> $workDir/sync-fork.errors
+            log_error "invalid remote repo location: $remoteRepoLocation"
             return 1
             ;;
         esac
@@ -74,7 +74,7 @@ upstream_url() {
             echo "https://bitbucket.org/$accountName"
             ;;
           *)
-            echo "$(log_date) ERROR: invalid remote repo location: $remoteRepoLocation" >> $workDir/sync-fork.errors
+            log_error "invalid remote repo location: $remoteRepoLocation"
             return 1
             ;;
         esac
@@ -85,13 +85,13 @@ upstream_url() {
             echo ""
             ;;
           *)
-            echo "$(log_date) ERROR: invalid remote repo location: $remoteRepoLocation" >> $workDir/sync-fork.errors
+            log_error "invalid remote repo location: $remoteRepoLocation"
             return 1
             ;;
         esac
         ;;
       *)
-        echo "$(log_date) ERROR: invalid remote repo vcs: $upstreamRepoVcs" >> $workDir/sync-fork.errors
+        log_error "invalid remote repo vcs: $upstreamRepoVcs"
         ;;
   esac
 
@@ -99,31 +99,31 @@ upstream_url() {
 
 sync_fork() {
 
-  upstreamRepoVcs="${1}"
-  remoteRepoLocation="${2}"
-  masterBranch="${3}"
-  repoName="${4}"
-  accountName="${5}"
-  projectName="${6}"
-  skipRepoUpdate="false"
+  local upstreamRepoVcs="$1"
+  local remoteRepoLocation="$2"
+  local masterBranch="$3"
+  local repoName="$4"
+  local accountName="$5"
+  local projectName="$6"
+  local skipRepoUpdate=false
 
   cd "$workDir"
 
-  git clone git@github.com:chlorm-forks/"${repoName}".git
-  cd ${repoName}
+  git clone git@github.com:chlorm-forks/"$repoName".git
+  cd "$repoName"
 
 
   # Check to see if repo has a remote upstream set
-  checkForUpstreamRemote=$(git remote | grep 'upstream' > /dev/null)
+  local checkForUpstreamRemote=$(git remote | grep 'upstream' > /dev/null)
   # If not, add upstream remote
   [ -z "$checkForUpstreamRemote" ] && {
-    git remote add upstream "$(upstream_url)"/"${repoName}".git || {
-      echo "$(log_date) ERROR: failed to add upstream remote to $repoName.git" >> $workDir/sync-fork.errors
+    git remote add upstream "$(upstream_url)"/"$repoName".git || {
+      log_error "failed to add upstream remote to $repoName.git"
     }
   }
 
   # Check to see if the upstream repo still exists
-  case $upstreamRepoVcs in
+  case "$upstreamRepoVcs" in
     'bazaar')
       return 0
       ;;
@@ -134,10 +134,10 @@ sync_fork() {
       return 0
       ;;
     'git')
-      git ls-remote --exit-code --heads "$(upstream_url)"/"${repoName}".git
+      git ls-remote --exit-code --heads "$(upstream_url)"/"$repoName".git
       if test $? = 2 ; then
-        echo "$(log_date) ERROR: $repoName upstream unreachable" >> $workDir/sync-fork.errors
-        skipRepoUpdate="true"
+        log_error "$repoName upstream unreachable"
+        skipRepoUpdate=true
       fi
       ;;
     'hg')
@@ -148,26 +148,26 @@ sync_fork() {
       ;;
   esac
 
-  [ "$skipRepoUpdate" == "false" ] && {
+  [ $skipRepoUpdate = false ] && {
     git fetch upstream || {
-      echo "$(log_date) ERROR: git failed to fetch upstream for $repoName" >> $workDir/sync-fork.errors
+      log_error "git failed to fetch upstream for $repoName"
     }
 
     git pull upstream "$masterBranch" || {
-      echo "$(log_date) ERROR: git pull failed for $repoName" >> $workDir/sync-fork.errors
+      log_error "git pull failed for $repoName"
     }
 
     # Never use --force, could result in data loss in some cases
     git push origin "$masterBranch" || {
-      echo "$(log_date) ERROR: git push failed for $repoName" >> $workDir/sync-fork.errors
+      log_error "git push failed for $repoName"
     }
   }
 
-  cd $workDir
+  cd "$workDir"
 
   [ -d "$repoName" ] && {
-    rm -rf ${repoName}/ || {
-      echo "$(log_date) ERROR: failed to remove $repoName" >> $workDir/sync-fork.errors
+    rm -rf "$repoName"/ || {
+      log_error "failed to remove $repoName"
     }
   }
 
@@ -189,6 +189,7 @@ sync_fork git github master atlas Netflix
 sync_fork git github master awesome-c kozross
 sync_fork git github master awesome-go avelino
 sync_fork git github master aws-go stripe
+sync_fork git github master bangdb miketheprogrammer
 sync_fork git github master BDSup2Sub
 sync-fork git github master BDSup2SubPlusPlus amichaelt
 sync_fork git github master beets sampsyo
@@ -199,14 +200,17 @@ sync_fork git github master bone squiidz
 sync_fork git github master btree google
 sync_fork git github master build-web-application-with-golang astaxie
 sync_fork git github master cache2go rif
+sync_fork git github master cadvisor google
 sync_fork git github master calamari ceph
 sync_fork git github master cdnstats antage
 sync_fork git github master ceph ceph
 sync_fork git github master chub vchimishuk
 sync_fork git github master cli codegangsta
 sync_fork git github master cli-init tcnksm
+sync_fork git github master codebox CodeboxIDE
 sync_fork git github master codec nareix
 sync_fork git github master codeworld google
+sync_fork git github master collide WeTheInternet
 sync_fork git github master consul hashicorp
 sync_fork git github master consul-alerts AcalephStorage
 sync_fork git github master CoverflowAltTab dmo60
@@ -226,10 +230,12 @@ sync_fork git github master evil-icons outpunk
 sync-fork git github master fake2db emirozer
 sync_fork git github master ffmpeg-light acowley
 sync_fork git github master ffmpeg-mr tstordyallison
+sync_fork git github master fixed-data-table facebook
 sync_fork git github master flac.js audiocogs
 sync_fork git github master Flat-UI designmodo
 sync_fork git github master flowplayer flowplayer
 sync_fork git github master fnd xarg
+sync_fork git github master forestdb couchbase
 sync_fork git github master fshark xorg62
 sync_fork git github master fsnotify howeyc
 sync_fork git github master fuse bazillion
@@ -254,6 +260,7 @@ sync_fork git github master go-systemd ehmry
 sync_fork git github master go-taglib wtolson
 sync_fork git github master go-tpm google
 sync_fork git github master go-webdav google
+sync_fork git github master go-wol sabhiram
 sync_fork git github master go-xmpp mattn
 sync_fork git github master gocurse jabb
 sync_fork git github master gocurses tncardoso
@@ -275,6 +282,7 @@ sync_fork git github master grong bortzmeyer
 sync_fork git github master hack xorg62
 sync_fork git github master henchman sudharsh
 sync_fork git github master hesokuri google
+sync_fork git github master hhvm facebook
 sync_fork git github master htaccess phanan
 sync_fork git github master htop hishamhm
 sync_fork git github master http2 bradfitz
@@ -285,13 +293,18 @@ sync_fork git github master identity-toolkit-go-client google
 sync_fork git github master IFME Anime4000
 sync_fork git github master influxdb influxdb
 sync_fork git github master iothrottler efarrer
+sync_fork git github master jquery-pjax defunkt
+sync_fork git github master kubernetes GoogleCloudPlatform
 sync_fork git github master LaTeXTools SublimeText
 sync_fork git github master leaps Jeffail
 sync_fork git github master lhnb liskin
+sync_fork git github master libcontainer docker
+sync_fork git github master libgit2 libgit2
 sync_fork git github master libtorrent rakshasa
 sync_fork git github master libvpx webmproject
 sync_fork git github master lime limetext
 sync_fork git github master liteide visualfc
+sync_fork git github master lmctfy google
 sync_fork git github master logstash elasticsearch
 sync_fork git github master machine docker
 sync_fork git github master malus distributed
@@ -313,6 +326,7 @@ sync_fork git github master Music-Tag-MP3 riemann42
 sync_fork git github master Music-Tag-MusicBrainz riemann42
 sync_fork git github master Music-Tag-OGG riemann42
 sync_fork git github master MusicFS thereapman
+sync_fork git github 5.7 mysql-server mysql
 sync_fork git github master mysqlenv shim0mura
 sync_fork git github master netsnail PerArneng
 sync_fork git github master nix NixOS
@@ -346,12 +360,14 @@ sync_fork git github master pulsego moriyoshi
 sync_fork git github master pure yahoo
 sync_fork git github master react facebook
 sync_fork git github master react-canvas facebook
+sync_fork git github master rebound-js facebook
 sync_fork git github master reddit reddit
 sync_fork git github master revel revel
 sync_fork git github master rfc mislav
 sync_fork git github develop riak basho
 sync_fork git github master riak-haskell-client markhibberd
 sync_fork git github master riako jkassemi
+sync_fork git github master rocksdb facebook
 sync_fork git github master rsync julian-gutierrez-o
 sync_fork git github master rtorrent rakshasa
 sync_fork git github master rtorrent-doc rakshasa
@@ -365,6 +381,7 @@ sync_fork git github master snappy google
 sync_fork git github master source-code-pro adobe-fonts
 sync_fork git github master spinner briandowns
 sync_fork git github master split2flac ftrvxmtrx
+sync_fork git github master sprunge rupa
 sync_fork git github master Squire neilj
 sync_fork git github master supler softwaremill
 sync_fork git github master SVG-Loaders SamHerbert
@@ -378,8 +395,10 @@ sync_fork git github master tty-pong xorg62
 sync_fork git github master tty-tetris xorg62
 sync_fork git github master U-232-V3 Bigjoos
 sync_fork git github master uhub janvidar
+sync_fork git github master vid.stab georgmartius
 sync_fork git github master video.js videojs
 sync_fork git github master viper spf13
+sync_fork git github master watchman facebook
 sync_fork git github master wav nf
 sync_fork git github master wcld ryandotsmith
 sync_fork git github master wesb sipi
@@ -388,6 +407,7 @@ sync_fork git github master what-cd-scripts gmcabrita
 sync_fork git github master wiki peterhellberg
 sync_fork git github master wmfs xorg62
 sync_fork git github master wtftw Kintaro
+sync_fork git github master xavs pandastream
 sync_fork git github master xmobar jaor
 sync_fork git github master xsecurelock google
 sync_fork git github master ympd notandy
