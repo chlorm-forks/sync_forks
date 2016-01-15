@@ -50,6 +50,9 @@ upstream_url() {
           'blicky')
             echo "git://g.blicky.net"
             ;;
+          'ffmpeg')
+            echo 'git://git.ffmpeg.org'
+            ;;
           'github')
             echo "git@github.com:$accountName"
             ;;
@@ -117,7 +120,7 @@ sync_fork() {
   local checkForUpstreamRemote=$(git remote | grep 'upstream' > /dev/null)
   # If not, add upstream remote
   [ -z "$checkForUpstreamRemote" ] && {
-    git remote add upstream "$(upstream_url)"/"$repoName".git || {
+    git remote add upstream "$(upstream_url)/${repoName}".git || {
       log_error "failed to add upstream remote to $repoName.git"
     }
   }
@@ -134,7 +137,7 @@ sync_fork() {
       return 0
       ;;
     'git')
-      git ls-remote --exit-code --heads "$(upstream_url)"/"$repoName".git
+      git ls-remote --exit-code --heads "$(upstream_url)/${repoName}".git
       if test $? = 2 ; then
         log_error "$repoName upstream unreachable"
         skipRepoUpdate=true
@@ -183,6 +186,9 @@ sync_fork() {
 
 # Bitbucket (hg)
 #sync_fork hg bitbucket x265 multicoreware
+
+# FFmpeg
+sync_fork git ffmpeg master rtmpdump
 
 # Github (git)
 sync_fork git github master atlas Netflix
