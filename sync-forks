@@ -87,7 +87,7 @@ SyncMirror::Mirror() {
   trap -- "SyncMirror::TmpCleanup $TmpDir" ERR
 
   echo "cloning: $RepoUpstreamUrl" >&2
-  git clone --bare "$RepoUpstreamUrl" "$TmpDir" || {
+  GIT_TERMINAL_PROMPT=0 git clone --bare "$RepoUpstreamUrl" "$TmpDir" || {
     SyncMirror::Log "cloning failed for: $RepoUpstreamUrl"
     return 1
   }
