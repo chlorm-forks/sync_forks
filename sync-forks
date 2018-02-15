@@ -5,25 +5,24 @@ set -o errtrace
 set -o functrace
 set -o pipefail
 
-source "$(lib-bash)"
-
-export CONCURRENT_LIMIT=3
-export CONCURRENT_COMPACT=0
-
 declare -r SYNCMIRROR_PREFIX="$(
   readlink -f "$(
     readlink -f "$(
       dirname "$(
-        readlink -f "${0}"
+        readlink -f "$0"
       )"
     )"
   )"
 )"
 declare -r SYNCMIRROR_WORK_DIR="$(pwd)"
 
-if [ "${SYNCMIRROR_PREFIX}" == "${SYNCMIRROR_WORK_DIR}" ] ; then
-  Log::Message 'error' \
-    "cannot create tmp directories in sync mirror's prefix"
+source "$SYNCMIRROR_PREFIX"/concurrent/concurrent.lib.sh
+
+export CONCURRENT_LIMIT=3
+export CONCURRENT_COMPACT=0
+
+if [ "$SYNCMIRROR_PREFIX" == "$SYNCMIRROR_WORK_DIR" ] ; then
+  echo "cannot create tmp directories in sync mirror's prefix" >&2
   #exit 1
 fi
 
@@ -31,127 +30,122 @@ fi
 #trap -- 'Log::Trace ; exit 1' ERR
 
 SyncMirror::TmpCreate() {
-  local -r WorkingDirectory="${1}"
-  local -i RandomNumber="${RANDOM}"
+  local -r WorkingDirectory="$1"
+  local -i RandomNumber="$RANDOM"
 
-  while [ -d "${WorkingDirectory}/.sync-mirror.${RandomNumber}" ] ; do
-    RandomNumber="${RANDOM}"
+  while [ -d "$WorkingDirectory/.sync-mirror.$RandomNumber" ]; do
+    RandomNumber="$RANDOM"
   done
 
-  Log::Message 'info' \
-    "creating tmp directory: ${WorkingDirectory}/.sync-mirror.${RandomNumber}"
-  mkdir "${WorkingDirectory}/.sync-mirror.${RandomNumber}"
+  echo "creating tmp directory: $WorkingDirectory/.sync-mirror.$RandomNumber" >&2
+  mkdir -v "$WorkingDirectory/.sync-mirror.$RandomNumber"
 
-  echo "${WorkingDirectory}/.sync-mirror.${RandomNumber}"
+  echo "$WorkingDirectory/.sync-mirror.$RandomNumber" >&2
 }
 
 SyncMirror::TmpCleanup() {
-  local -r TmpDir="${1}"
+  local -r TmpDir="$1"
 
-  if [ -d "${TmpDir}" ] && \
-     [[ "${TmpDir}" =~ ^${SYNCMIRROR_WORK_DIR}/\.sync-mirror\..*$ ]] ; then
-    Directory::Remove "${TmpDir}"
+  if [ -d "$TmpDir" ] && \
+     [[ "$TmpDir" =~ ^$SYNCMIRROR_WORK_DIR/\.sync-mirror\..*$ ]]; then
+    rm -rv "$TmpDir"
   fi
 }
 
 SyncMirror::Log() {
   echo "$@" >&2
-  echo "$(date '+%F %R') $@" >> "${SYNCMIRROR_WORK_DIR}"/sync-mirrors.errors
+  echo "$(date '+%F %R') $@" >> "$SYNCMIRROR_WORK_DIR"/sync-mirrors.errors
 }
 
 SyncMirror::CheckRepoSize() {
-  Function::RequiredArgs '1' "$#"
   local -i Size
-  local -r Repo="${1}"
+  local -r Repo="$1"
 
   # Find size of repository in bytes
   Size="$(
-    du -s "${Repo}" |
+    du -s "$Repo" |
       awk '{print $1 ; exit}' |
       grep --only-matching --perl-regexp '[0-9]+'
   )"
 
-  Var::Type.integer "${Size}"
-
-  if [ ${Size} -gt 1074000 ] ; then
-    SyncMirror::Log "${RepoName} is over GitHub's 1GiB limit: $(
-      du -hs "${Repo}" | awk '{print $1 ; exit}'
+  if [ $Size -gt 1074000 ]; then
+    SyncMirror::Log "$RepoName is over GitHub's 1GiB limit: $(
+      du -hs "$Repo" | awk '{print $1 ; exit}'
     )"
     return 1
   fi
 }
 
 SyncMirror::Mirror() {
-  Function::RequiredArgs '2' "$#"
-  local -r RepoName="${1}"
-  local -r RepoUpstreamUrl="${2}"
+  local -r RepoName="$1"
+  local -r RepoUpstreamUrl="$2"
   local TmpDir
 
-  TmpDir="$(SyncMirror::TmpCreate "${SYNCMIRROR_WORK_DIR}")"
+  TmpDir="$(SyncMirror::TmpCreate "$SYNCMIRROR_WORK_DIR")"
 
-  trap "SyncMirror::TmpCleanup ${TmpDir}" SIGINT SIGTERM
-  trap -- "SyncMirror::TmpCleanup ${TmpDir}" ERR
+  trap "SyncMirror::TmpCleanup $TmpDir" SIGINT SIGTERM
+  trap -- "SyncMirror::TmpCleanup $TmpDir" ERR
 
-  Log::Message 'info' "cloning: ${RepoUpstreamUrl}"
-  git clone --bare "${RepoUpstreamUrl}" "${TmpDir}" || {
-    SyncMirror::Log "cloning failed for: ${RepoUpstreamUrl}"
+  echo "cloning: $RepoUpstreamUrl" >&2
+  git clone --bare "$RepoUpstreamUrl" "$TmpDir" || {
+    SyncMirror::Log "cloning failed for: $RepoUpstreamUrl"
     return 1
   }
 
-  SyncMirror::CheckRepoSize "${TmpDir}" || return 3
+  SyncMirror::CheckRepoSize "$TmpDir" || return 3
 
-  pushd "${TmpDir}" > /dev/null
-    Log::Message 'info' "setting remote origin"
+  pushd "$TmpDir" > /dev/null
+    echo "setting remote origin" >&2
     git remote set-url --push origin \
       "git@github.com:chlorm-forks/${RepoName}.git" || {
-      SyncMirror::Log "failed to add upstream remote to: ${RepoName}"
+      SyncMirror::Log "failed to add upstream remote to: $RepoName"
     }
-    Log::Message 'info' "fetching origin"
+    echo "fetching origin" >&2
     git fetch -p origin || {
-      SyncMirror::Log "git failed to fetch upstream for ${RepoName}"
+      SyncMirror::Log "git failed to fetch upstream for $RepoName"
     }
-    Log::Message 'info' "pushing changes"
+  echo "pushing changes" >&2
     # Don't push with --mirror or --prune as both options may overwrite
     # data.  This prevents someone from cleaning the commit history on
     # a repo we are mirroring and then overwriting our mirror with an
     # empty repo.
     git push --all || {
-      SyncMirror::Log "git push failed for ${RepoName}"
+      SyncMirror::Log "git push failed for $RepoName"
     }
   popd > /dev/null
 
-  SyncMirror::TmpCleanup "${TmpDir}"
+  SyncMirror::TmpCleanup "$TmpDir"
 }
 
-if [ -f "${1}" ] ; then
-  MirrorList="${1}"
+if [ -f "$1" ]; then
+  MirrorList="$1"
 else
-  MirrorList="${SYNCMIRROR_PREFIX}/mirror.list"
+  MirrorList="$SYNCMIRROR_PREFIX/mirror.list"
 fi
 
-if [ -n "${1}" ] ; then
-  declare -r Mirror="${1}"
+if [ -n "$1" ]; then
+  declare -r Mirror="$1"
 fi
 
-echo "Mirror list: ${MirrorList}"
+echo "Mirror list: $MirrorList" >&2
 
 declare -A MirrorList
-while read Line ; do
+while read Line; do
   # Don't attempt to eval comments or empty lines
-  if [[ "${Line}" =~ ^\#.* ]] || [ -z "${Line}" ] ; then
+  if [[ "$Line" =~ ^\#.* ]] || [ -z "$Line" ]; then
     continue
   fi
-  Log::Message 'info' "mirror file line: ${Line}"
-  eval MirrorList+=(${Line})
-done < "${MirrorList}"
+  echo "mirror file line: $Line" >&2
+  eval MirrorList+=($Line)
+done < "$MirrorList"
 
-if [ -n "${Mirror}" ] ; then
-  SyncMirror::Mirror "${Mirror}" "${MirrorList["${Mirror}"]}"
+if [ -n "$Mirror" ]; then
+  SyncMirror::Mirror "$Mirror" "${MirrorList["$Mirror"]}"
 else
   declare -a ConcurrentArgs
-  for i in "${!MirrorList[@]}" ; do
+  for i in "${!MirrorList[@]}"; do
     ConcurrentArgs+=(
-      '-' "${i}" 'SyncMirror::Mirror' "${i}" "${MirrorList["${i}"]}"
+      '-' "$i" 'SyncMirror::Mirror' "$i" "${MirrorList["$i"]}"
     )
   done
 
