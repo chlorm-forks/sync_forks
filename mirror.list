@@ -2,10 +2,7 @@
 #[bcache-linux]='https://evilpiepirate.org/git/linux-bcache'
 [bcache-tools]='https://evilpiepirate.org/git/bcache-tools'
 [gyp]='https://chromium.googlesource.com/external/gyp'
-[libmpd]='git://git.musicpd.org/master/libmpd'
-[mpd]='git://git.musicpd.org/master/mpd'
 [ncdc]='git://g.blicky.net/ncdc'
-[ncmpc]='git://git.musicpd.org/master/ncmpc'
 [nut]='https://git.ffmpeg.org/nut'
 [rtmpdump]='https://git.ffmpeg.org/rtmpdump'
 
@@ -15,7 +12,7 @@
 ['Emby.ApiClient.Java']='https://github.com/MediaBrowser/Emby.ApiClient.Java'
 ['Emby.ApiClient.Javascript']='https://github.com/MediaBrowser/Emby.ApiClient.Javascript'
 ['Emby.ApiClient.Swift']='https://github.com/MediaBrowser/Emby.ApiClient.Swift'
-['Emby.BdInfo']='https://github.com/MediaBrowser/BdInfo'
+#['Emby.BdInfo']='https://github.com/MediaBrowser/BdInfo'  # Dead
 ['Emby.Build']='https://github.com/MediaBrowser/Emby.Build'
 ['Emby.MediaBrowser.Build']='https://github.com/MediaBrowser/MediaBrowser.Build'
 ['Emby.MediaBrowser.Classic']='https://github.com/MediaBrowser/MediaBrowser.Classic'
@@ -23,15 +20,15 @@
 ['Emby.MediaBrowser.Kodi.SkinHelper']='https://github.com/MediaBrowser/MediaBrowser.Kodi.SkinHelper'
 ['Emby.Channels']='https://github.com/MediaBrowser/Emby.Channels'
 ['Emby.Chromeapp']='https://github.com/MediaBrowser/emby-chromeapp'
-['Emby.Chromecast']='https://github.com/MediaBrowser/Emby.Chromecast'
-['Emby.Chromecast.Beta']='https://github.com/MediaBrowser/Emby.Chromecast.Beta'
+#['Emby.Chromecast']='https://github.com/MediaBrowser/Emby.Chromecast'  # Dead
+#['Emby.Chromecast.Beta']='https://github.com/MediaBrowser/Emby.Chromecast.Beta'  # Dead
 ['Emby.Cordova.Chromecast']='https://github.com/MediaBrowser/cordova-chromecast'
 ['Emby.Cordova.Chromecast.Ios']='https://github.com/MediaBrowser/cordova-chromecast-ios'
 ['Emby.ImageMagickSharp']='https://github.com/MediaBrowser/ImageMagickSharp'
 ['Emby.IsoMounting']='https://github.com/MediaBrowser/Emby.IsoMounting'
 ['Emby.Kodi.AddOn']='https://github.com/MediaBrowser/plugin.video.emby'
 ['Emby.Naming']='https://github.com/MediaBrowser/Emby.Naming'
-['Emby.Patterns']='https://github.com/MediaBrowser/Patterns'
+#['Emby.Patterns']='https://github.com/MediaBrowser/Patterns'  # Dead
 ['Emby.Plugins']='https://github.com/MediaBrowser/Emby.Plugins'
 ['Emby.Plugins.Anime']='https://github.com/MediaBrowser/MediaBrowser.Plugins.Anime'
 ['Emby.Plugins.DVBViewerTV']='https://github.com/MediaBrowser/DVBViewerTVPlugin'
@@ -39,7 +36,7 @@
 ['Emby.Plugins.GameBrowser']='https://github.com/MediaBrowser/GameBrowser'
 ['Emby.Plugins.MediaPortalTV']='https://github.com/MediaBrowser/MediaPortalTVPlugin'
 ['Emby.Plugins.RokuBif']='https://github.com/MediaBrowser/roku-bif'
-['Emby.Plugins.StudioCleaner']='https://github.com/MediaBrowser/studio-cleaner'
+#['Emby.Plugins.StudioCleaner']='https://github.com/MediaBrowser/studio-cleaner'  # Dead
 ['Emby.Plugins.Theater']='https://github.com/MediaBrowser/Emby.Theater.Plugins'
 ['Emby.Plugins.Trakt']='https://github.com/MediaBrowser/trakt'
 ['Emby.Plugins.Tvheadend']='https://github.com/MediaBrowser/Tvheadend'
@@ -49,16 +46,16 @@
 ['Emby.Restart']='https://github.com/MediaBrowser/Emby.Restart'
 ['Emby.Roku']='https://github.com/MediaBrowser/Emby.Roku'
 ['Emby.SamsungSmartTV']='https://github.com/MediaBrowser/SamsungSmartTV'
-['Emby.SharpCompress']='https://github.com/MediaBrowser/sharpcompress'
+#['Emby.SharpCompress']='https://github.com/MediaBrowser/sharpcompress'  # Dead
 ['Emby.SocketHttpListener']='https://github.com/MediaBrowser/SocketHttpListener'
 ['Emby.Theater.Electron']='https://github.com/MediaBrowser/emby-theater-electron'
-['Emby.Theater.Linux']='https://github.com/MediaBrowser/emby-theater-linux'
+#['Emby.Theater.Linux']='https://github.com/MediaBrowser/emby-theater-linux'  # Dead
 ['Emby.Theater.Pi']='https://github.com/MediaBrowser/emby-theater-pi'
 ['Emby.Theater.Windows']='https://github.com/MediaBrowser/emby-theater-windows'
 ['Emby.Themes.Choclate']='https://github.com/MediaBrowser/MediaBrowser.Themes.Chocolate'
 ['Emby.UniversalDetector']='https://github.com/MediaBrowser/UniversalDetector'
 ['Emby.UpForGrabsNet']='https://github.com/MediaBrowser/up-for-grabs.net'
-['Emby.Web.Mobile']='https://github.com/MediaBrowser/emby-web-mobile'
+#['Emby.Web.Mobile']='https://github.com/MediaBrowser/emby-web-mobile'  # Dead
 ['Emby.Web.Components']='https://github.com/MediaBrowser/emby-webcomponents'
 ['Emby.Web.DefaultSkin']='https://github.com/MediaBrowser/emby-web-defaultskin'
 ['Emby.Web.Plugins.SoundEffects']='https://github.com/MediaBrowser/emby-web-plugins-soundeffects'
