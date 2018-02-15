@@ -1,69 +1,161 @@
 #!/usr/bin/env bash
 
-source "$(readlink -f "$(readlink -f "$(dirname "$(readlink -f "${0}")")")"/concurrent/concurrent.lib.sh)"
+set -o errexit
+set -o errtrace
+set -o functrace
+set -o pipefail
 
-workDir="$(pwd)"
+source "$(lib-bash)"
 
-export CONCURRENT_LIMIT=8
+export CONCURRENT_LIMIT=3
 export CONCURRENT_COMPACT=0
 
-log_error() {
-  echo "$@"
-  echo "$(date '+%F %R') $@" >> "${workDir}"/sync-fork.errors
+declare -r SYNCMIRROR_PREFIX="$(
+  readlink -f "$(
+    readlink -f "$(
+      dirname "$(
+        readlink -f "${0}"
+      )"
+    )"
+  )"
+)"
+declare -r SYNCMIRROR_WORK_DIR="$(pwd)"
+
+if [ "${SYNCMIRROR_PREFIX}" == "${SYNCMIRROR_WORK_DIR}" ] ; then
+  Log::Message 'error' \
+    "cannot create tmp directories in sync mirror's prefix"
+  #exit 1
+fi
+
+#trap 'Log::Func' DEBUG
+#trap -- 'Log::Trace ; exit 1' ERR
+
+SyncMirror::TmpCreate() {
+  local -r WorkingDirectory="${1}"
+  local -i RandomNumber="${RANDOM}"
+
+  while [ -d "${WorkingDirectory}/.sync-mirror.${RandomNumber}" ] ; do
+    RandomNumber="${RANDOM}"
+  done
+
+  Log::Message 'info' \
+    "creating tmp directory: ${WorkingDirectory}/.sync-mirror.${RandomNumber}"
+  mkdir "${WorkingDirectory}/.sync-mirror.${RandomNumber}"
+
+  echo "${WorkingDirectory}/.sync-mirror.${RandomNumber}"
 }
 
-sync_fork() {
-  local RepoName="${1}"
-  [ -n "${RepoName}" ] || return 2
-  local UpstreamRepoUrl="${ForkList[${RepoName}]}"
-  local TMPDIR
+SyncMirror::TmpCleanup() {
+  local -r TmpDir="${1}"
 
-  TMPDIR=`mktemp -d`
+  if [ -d "${TmpDir}" ] && \
+     [[ "${TmpDir}" =~ ^${SYNCMIRROR_WORK_DIR}/\.sync-mirror\..*$ ]] ; then
+    Directory::Remove "${TmpDir}"
+  fi
+}
 
-  echo "Cloning: ${UpstreamRepoUrl}"
-  git clone --mirror "${UpstreamRepoUrl}" "${TMPDIR}" >/dev/null 2>&1 || {
-    log_error "cloning failed for: ${UpstreamRepoUrl}"
+SyncMirror::Log() {
+  echo "$@" >&2
+  echo "$(date '+%F %R') $@" >> "${SYNCMIRROR_WORK_DIR}"/sync-mirrors.errors
+}
+
+SyncMirror::CheckRepoSize() {
+  Function::RequiredArgs '1' "$#"
+  local -i Size
+  local -r Repo="${1}"
+
+  # Find size of repository in bytes
+  Size="$(
+    du -s "${Repo}" |
+      awk '{print $1 ; exit}' |
+      grep --only-matching --perl-regexp '[0-9]+'
+  )"
+
+  Var::Type.integer "${Size}"
+
+  if [ ${Size} -gt 1074000 ] ; then
+    SyncMirror::Log "${RepoName} is over GitHub's 1GiB limit: $(
+      du -hs "${Repo}" | awk '{print $1 ; exit}'
+    )"
+    return 1
+  fi
+}
+
+SyncMirror::Mirror() {
+  Function::RequiredArgs '2' "$#"
+  local -r RepoName="${1}"
+  local -r RepoUpstreamUrl="${2}"
+  local TmpDir
+
+  TmpDir="$(SyncMirror::TmpCreate "${SYNCMIRROR_WORK_DIR}")"
+
+  trap "SyncMirror::TmpCleanup ${TmpDir}" SIGINT SIGTERM
+  trap -- "SyncMirror::TmpCleanup ${TmpDir}" ERR
+
+  Log::Message 'info' "cloning: ${RepoUpstreamUrl}"
+  git clone --bare "${RepoUpstreamUrl}" "${TmpDir}" || {
+    SyncMirror::Log "cloning failed for: ${RepoUpstreamUrl}"
     return 1
   }
 
-  pushd "${TMPDIR}" > /dev/null
-    echo '  setting remote'
+  SyncMirror::CheckRepoSize "${TmpDir}" || return 3
+
+  pushd "${TmpDir}" > /dev/null
+    Log::Message 'info' "setting remote origin"
     git remote set-url --push origin \
-      "git@github.com:chlorm-forks/${RepoName}.git" >&2 || {
-      log_error "failed to add upstream remote to: ${RepoName}"
+      "git@github.com:chlorm-forks/${RepoName}.git" || {
+      SyncMirror::Log "failed to add upstream remote to: ${RepoName}"
     }
-    echo '  fetching origin'
-    git fetch -p origin >&2 || {
-      log_error "git failed to fetch upstream for ${RepoName}"
+    Log::Message 'info' "fetching origin"
+    git fetch -p origin || {
+      SyncMirror::Log "git failed to fetch upstream for ${RepoName}"
     }
-    echo '  pushing changes'
-    git push --mirror >/dev/null 2>&1 || {
-      log_error "git push failed for ${RepoName}"
+    Log::Message 'info' "pushing changes"
+    # Don't push with --mirror or --prune as both options may overwrite
+    # data.  This prevents someone from cleaning the commit history on
+    # a repo we are mirroring and then overwriting our mirror with an
+    # empty repo.
+    git push --all || {
+      SyncMirror::Log "git push failed for ${RepoName}"
     }
   popd > /dev/null
+
+  SyncMirror::TmpCleanup "${TmpDir}"
 }
 
-declare -A ForkList
-ForkList=(
-  # Blicky
-  [ncdc]='git://g.blicky.net/ncdc'
-  # Chromium
-  [gyp]='https://chromium.googlesource.com/external/gyp'
-  # FFmpeg
-  [nut]='git://git.ffmpeg.org/nut.git'
-  [rtmpdump]='git://git.ffmpeg.org/rtmpdump'
-  # Github
-  #['video.js']='https://github.com/videojs/video.js'
-)
+if [ -f "${1}" ] ; then
+  MirrorList="${1}"
+else
+  MirrorList="${SYNCMIRROR_PREFIX}/mirror.list"
+fi
 
 if [ -n "${1}" ] ; then
-  sync_fork "${1}"
+  declare -r Mirror="${1}"
+fi
+
+echo "Mirror list: ${MirrorList}"
+
+declare -A MirrorList
+while read Line ; do
+  # Don't attempt to eval comments or empty lines
+  if [[ "${Line}" =~ ^\#.* ]] || [ -z "${Line}" ] ; then
+    continue
+  fi
+  Log::Message 'info' "mirror file line: ${Line}"
+  eval MirrorList+=(${Line})
+done < "${MirrorList}"
+
+if [ -n "${Mirror}" ] ; then
+  SyncMirror::Mirror "${Mirror}" "${MirrorList["${Mirror}"]}"
 else
   declare -a ConcurrentArgs
-  for i in "${!ForkList[@]}" ; do
-    ConcurrentArgs+=("- ${i} sync_fork ${i}")
+  for i in "${!MirrorList[@]}" ; do
+    ConcurrentArgs+=(
+      '-' "${i}" 'SyncMirror::Mirror' "${i}" "${MirrorList["${i}"]}"
+    )
   done
-  eval concurrent ${ConcurrentArgs[@]}
+
+  eval concurrent "${ConcurrentArgs[@]}"
 fi
 
 exit 0
