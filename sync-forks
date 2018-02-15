@@ -21,7 +21,7 @@ source "$SYNCMIRROR_PREFIX"/concurrent/concurrent.lib.sh
 export CONCURRENT_LIMIT=3
 export CONCURRENT_COMPACT=0
 
-if [ "$SYNCMIRROR_PREFIX" == "$SYNCMIRROR_WORK_DIR" ] ; then
+if [ "$SYNCMIRROR_PREFIX" == "$SYNCMIRROR_WORK_DIR" ]; then
   echo "cannot create tmp directories in sync mirror's prefix" >&2
   #exit 1
 fi
@@ -38,9 +38,9 @@ SyncMirror::TmpCreate() {
   done
 
   echo "creating tmp directory: $WorkingDirectory/.sync-mirror.$RandomNumber" >&2
-  mkdir -v "$WorkingDirectory/.sync-mirror.$RandomNumber"
+  mkdir "$WorkingDirectory/.sync-mirror.$RandomNumber"
 
-  echo "$WorkingDirectory/.sync-mirror.$RandomNumber" >&2
+  echo "$WorkingDirectory/.sync-mirror.$RandomNumber"
 }
 
 SyncMirror::TmpCleanup() {
