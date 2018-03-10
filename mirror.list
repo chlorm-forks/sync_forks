@@ -1,13 +1,19 @@
-[bcache-benchmarking]='https://evilpiepirate.org/git/bcache-benchmarking'
-#[bcache-linux]='https://evilpiepirate.org/git/linux-bcache'
-[bcache-tools]='https://evilpiepirate.org/git/bcache-tools'
-[gyp]='https://chromium.googlesource.com/external/gyp'
-[ncdc]='git://g.blicky.net/ncdc'
-[nut]='https://git.ffmpeg.org/nut'
-[rtmpdump]='https://git.ffmpeg.org/rtmpdump'
+['bcache-benchmarking']='https://evilpiepirate.org/git/bcache-benchmarking'
+#['bcache-linux']='https://evilpiepirate.org/git/linux-bcache'
+['bcache-tools']='https://evilpiepirate.org/git/bcache-tools'
+['gyp']='https://chromium.googlesource.com/external/gyp'
+['ncdc']='git://g.blicky.net/ncdc'
+
+# FFmpeg
+['nut']='https://git.ffmpeg.org/nut'
+['rtmpdump']='https://git.ffmpeg.org/rtmpdump'
+
+# Videolan
+['nv-codec-headers']='https://git.videolan.org/git/ffmpeg/nv-codec-headers.git'
+['x264']='https://git.videolan.org/git/x264.git'
 
 # Emby mirrors
-['Emby']='https://github.com/MediaBrowser/Emby'
+#['Emby']='https://github.com/MediaBrowser/Emby'  # Over limit
 ['Emby.ApiClient']='https://github.com/MediaBrowser/Emby.ApiClient'
 ['Emby.ApiClient.Java']='https://github.com/MediaBrowser/Emby.ApiClient.Java'
 ['Emby.ApiClient.Javascript']='https://github.com/MediaBrowser/Emby.ApiClient.Javascript'
@@ -41,8 +47,8 @@
 ['Emby.Plugins.Trakt']='https://github.com/MediaBrowser/trakt'
 ['Emby.Plugins.Tvheadend']='https://github.com/MediaBrowser/Tvheadend'
 ['Emby.Plugins.VuPlus']='https://github.com/MediaBrowser/MediaBrowser.Plugins.VuPlus'
-['Emby.Releases']='https://github.com/MediaBrowser/Emby.Releases'
-['Emby.Resources']='https://github.com/MediaBrowser/Emby.Resources'
+#['Emby.Releases']='https://github.com/MediaBrowser/Emby.Releases'  # Over limit
+#['Emby.Resources']='https://github.com/MediaBrowser/Emby.Resources'  # Over limit
 ['Emby.Restart']='https://github.com/MediaBrowser/Emby.Restart'
 ['Emby.Roku']='https://github.com/MediaBrowser/Emby.Roku'
 ['Emby.SamsungSmartTV']='https://github.com/MediaBrowser/SamsungSmartTV'
@@ -51,7 +57,7 @@
 ['Emby.Theater.Electron']='https://github.com/MediaBrowser/emby-theater-electron'
 #['Emby.Theater.Linux']='https://github.com/MediaBrowser/emby-theater-linux'  # Dead
 ['Emby.Theater.Pi']='https://github.com/MediaBrowser/emby-theater-pi'
-['Emby.Theater.Windows']='https://github.com/MediaBrowser/emby-theater-windows'
+#['Emby.Theater.Windows']='https://github.com/MediaBrowser/emby-theater-windows'  # Over limit
 ['Emby.Themes.Choclate']='https://github.com/MediaBrowser/MediaBrowser.Themes.Chocolate'
 ['Emby.UniversalDetector']='https://github.com/MediaBrowser/UniversalDetector'
 ['Emby.UpForGrabsNet']='https://github.com/MediaBrowser/up-for-grabs.net'
