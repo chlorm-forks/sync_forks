@@ -4,6 +4,7 @@
 #['git2html']='http://hssl.cs.jhu.edu/~neal/git2html.git'  # Dead
 ['gyp']='https://chromium.googlesource.com/external/gyp'
 ['ncdc']='git://g.blicky.net/ncdc'
+['stagit']='git://git.codemadness.org/stagit'
 
 # FFmpeg
 ['nut']='https://git.ffmpeg.org/nut'
