@@ -1,6 +1,7 @@
 ['bcache-benchmarking']='https://evilpiepirate.org/git/bcache-benchmarking'
 #['bcache-linux']='https://evilpiepirate.org/git/linux-bcache'
 ['bcache-tools']='https://evilpiepirate.org/git/bcache-tools'
+#['git2html']='http://hssl.cs.jhu.edu/~neal/git2html.git'  # Dead
 ['gyp']='https://chromium.googlesource.com/external/gyp'
 ['ncdc']='git://g.blicky.net/ncdc'
 
