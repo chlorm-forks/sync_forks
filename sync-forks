@@ -48,7 +48,7 @@ SyncMirror::TmpCleanup() {
 
   if [ -d "$TmpDir" ] && \
      [[ "$TmpDir" =~ ^$SYNCMIRROR_WORK_DIR/\.sync-mirror\..*$ ]]; then
-    rm -rv "$TmpDir"
+    rm -frv "$TmpDir"
   fi
 }
 
