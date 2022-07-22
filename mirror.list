@@ -15,6 +15,10 @@
 ['nv-codec-headers']='https://git.videolan.org/git/ffmpeg/nv-codec-headers.git'
 ['x264']='https://git.videolan.org/git/x264.git'
 
+# SourceForge
+['librevenge']='git://git.code.sf.net/p/libwpd/librevenge'
+['libwpd']='https://git.code.sf.net/p/libwpd/code libwpd-code'
+
 # Emby mirrors
 #['Emby']='https://github.com/MediaBrowser/Emby'  # Over limit
 ['Emby.ApiClient']='https://github.com/MediaBrowser/Emby.ApiClient'
