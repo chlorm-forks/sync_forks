@@ -62,11 +62,7 @@ SyncMirror::CheckRepoSize() {
   local -r Repo="$1"
 
   # Find size of repository in bytes
-  Size="$(
-    du -s "$Repo" |
-      awk '{print $1 ; exit}' |
-      grep --only-matching --perl-regexp '[0-9]+'
-  )"
+  Size="$(du -s "$Repo" | grep -oP '^[0-9]+')"
 
   if [ $Size -gt 1074000 ]; then
     SyncMirror::Log "$RepoName is over GitHub's 1GiB limit: $(
